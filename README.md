@@ -4,3 +4,7 @@ npm i --save @nestjs/config
 npm i --save joi
 
 npm i --save @nestjs/typeorm typeorm mysql2
+
+
+
+npm run start:dev

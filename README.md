@@ -1,5 +1,14 @@
 npm i -- save class-validator class-transformer
-npm i --save @nestjs/mapped-types
+    // class-validator - validation decarators such as @IsEmail()
+    // class-transformer, class-validator'un yanında yüklenmeli beraber calısırlar.
+
+
+
+npm i --save @nestjs/mapped-types  
+    // UpdateTaskDto extends PartialType(CreateTaskDto) 
+    // PartialType, Omit, Pick, Intersection
+
+
 npm i --save @nestjs/config (config files)
 npm i --save joi (config files validation etc)
 

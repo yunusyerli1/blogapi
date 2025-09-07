@@ -4,11 +4,13 @@ import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { appConfig } from './config/app.config';
-import { appConfigSchema, ConfigType } from './config/config.types';
+import { appConfigSchema } from './config/config.types';
 import { typeOrmConfig } from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypedConfigService } from './config/typed-config.service';
-import { Task } from './tasks/task.entity';
+import { Task } from './tasks/entities/task.entity';
+import { User } from './users/user.entity';
+import { TaskLabel } from './tasks/entities/task-label.entity';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { Task } from './tasks/task.entity';
       inject: [ConfigService],
       useFactory: (configService: TypedConfigService) =>  ({
         ...configService.get('database'),
-        entities: [Task]
+        entities: [Task, User, TaskLabel]
       })
     }),
     TasksModule

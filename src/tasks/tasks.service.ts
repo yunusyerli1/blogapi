@@ -3,15 +3,20 @@ import { TaskStatus } from './models/task.model';
 import { CreateTaskDto, UpdateTaskDto } from './models/create-task.dto';
 import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
 import { Repository } from 'typeorm';
-import { Task } from './task.entity';
+import { Task } from './entities/task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TaskLabel } from './entities/task-label.entity';
+import { CreateTaskLabelDto } from './models/create-task-label.dto';
 
 @Injectable()
 export class TasksService {
 
   constructor(
     @InjectRepository(Task)
-    private readonly taskRepository: Repository<Task>
+    private readonly taskRepository: Repository<Task>,
+
+    @InjectRepository(TaskLabel)
+    private readonly labelRepository: Repository<TaskLabel>
   ) {}
 
   public async findAll(): Promise<Task[]> {
@@ -19,7 +24,10 @@ export class TasksService {
   }
 
   public async findOne(id: string): Promise<Task | null> {
-    return await this.taskRepository.findOneBy({id});
+    return await this.taskRepository.findOne({
+      where: { id },
+      relations: ['labels'],
+    });
   }
 
  
@@ -33,6 +41,18 @@ export class TasksService {
       }
     Object.assign(task, updateTaskDto);
     return await this.taskRepository.save(task);
+  }
+
+  public async addLabels(
+    task: Task,
+    labelDTOs: CreateTaskLabelDto[]
+  ): Promise<Task> {
+    const labels = labelDTOs.map(label => 
+      this.labelRepository.create(label)
+    );
+    
+    task.labels = [...task.labels, ...labels];
+    return await this.labelRepository.save(task);;
   }
 
   private isValidStatusTransition(

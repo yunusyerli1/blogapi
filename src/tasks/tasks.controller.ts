@@ -9,62 +9,42 @@ import {
   NotFoundException,
   Param,
   Patch,
-  Post,
-  Put,
+  Post
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import type { ITask } from './models/task.model';
 import type { FindOneParams } from './models/find-one.params';
 import { CreateTaskDto, UpdateTaskDto } from './models/create-task.dto';
 import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
+import { Task } from './task.entity';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
-  findAll() {
+  public async findAll(): Promise<Task[]> {
     return this.tasksService.findAll();
   }
 
   @Get(':id')
-  public findOne(@Param() params: FindOneParams): ITask {
-    const task = this.tasksService.findOne(params.id);
+  public async findOne(@Param() params: FindOneParams): Promise<Task>  {
+    return await this.findOneOrFail(params.id);
 
-    if (task) {
-      return task;
-    }
-
-    throw new NotFoundException();
-  }
-
-  @Get('status/:status')
-  getTasksByStatus(@Param('status') status: string) {
-    return this.tasksService.getTasksByStatus(status);
   }
 
   @Post()
-  public create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  public async create(@Body() createTaskDto: CreateTaskDto): Promise<Task>   {
+    return this.tasksService.createTask(createTaskDto);
   }
 
-  /*   @Put(':id')
-  updateTask(
-    @Param() params: FindOneParams,
-    @Body() updateTaskDto: UpdateTaskDto
-  ): ITask {
-    const task = this.findOneOrFail(params.id);
-    return this.tasksService.updateTask(task, updateTaskDto);
-  } */
-
   @Patch('/:id')
-  public updateTask(
+  public async updateTask(
     @Param() params: FindOneParams,
     @Body() updateTaskDto: UpdateTaskDto,
-  ): ITask {
-    const task = this.findOneOrFail(params.id);
+  ): Promise<Task>  {
+    const task = await this.findOneOrFail(params.id);
     try {
-        return this.tasksService.updateTask(task, updateTaskDto);
+        return await this.tasksService.updateTask(task, updateTaskDto);
     } catch (error) {
       if(error instanceof WrongTaskStatusException) {
         throw new BadRequestException(error.message);
@@ -75,13 +55,13 @@ export class TasksController {
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  public deleteTask(@Param() params: FindOneParams): void {
-    const task = this.findOneOrFail(params.id);
-    this.tasksService.deleteTask(task);
+  public async deleteTask(@Param() params: FindOneParams): Promise<void>  {
+    const task = await this.findOneOrFail(params.id);
+    await this.tasksService.deleteTask(task);
   }
 
-  private findOneOrFail(id: string): ITask {
-    const task = this.tasksService.findOne(id);
+  private async findOneOrFail(id: string): Promise<Task> {
+    const task = await this.tasksService.findOne(id);
 
     if (!task) {
       throw new NotFoundException();
@@ -89,4 +69,5 @@ export class TasksController {
 
     return task;
   }
+
 }

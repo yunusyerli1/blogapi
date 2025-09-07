@@ -18,6 +18,8 @@ npm i --save @nestjs/typeorm typeorm pg
 
 
 
-npm run start:dev
-docker compose up
+
+docker-compose up
 docker ps (Containerları gör)
+
+npm run start:dev

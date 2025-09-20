@@ -11,11 +11,14 @@ import { TypedConfigService } from './config/typed-config.service';
 import { Task } from './tasks/entities/task.entity';
 import { User } from './users/user.entity';
 import { TaskLabel } from './tasks/entities/task-label.entity';
+import { authConfig } from './config/auth.config';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-    load: [appConfig, typeOrmConfig],
+      isGlobal: true,
+    load: [appConfig, typeOrmConfig, authConfig],
     validationSchema: appConfigSchema,
     validationOptions: { 
      // allowUnknown: true, 
@@ -30,7 +33,8 @@ import { TaskLabel } from './tasks/entities/task-label.entity';
         entities: [Task, User, TaskLabel]
       })
     }),
-    TasksModule
+    TasksModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, {

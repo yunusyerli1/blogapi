@@ -1,24 +1,41 @@
-import { Task } from "src/tasks/entities/task.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Expose } from 'class-transformer';
+import { Task } from 'src/tasks/entities/task.entity';
+
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  @Expose()
+  id: string;
 
-    @Column()
-    name: string;
+  @Column()
+  @Expose()
+  name: string;
 
-    @Column()
-    email: string;
+  @Column()
+  @Expose()
+  email: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @Column()
+  password: string;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @CreateDateColumn()
+  @Expose()
+  createdAt: Date;
 
-    @OneToMany(() => Task, task => task.user, {nullable: true})
-    tasks: Task[];
+  @UpdateDateColumn()
+  @Expose()
+  updatedAt: Date;
 
+  @OneToMany(() => Task, (task) => task.user)
+  @Expose()
+  tasks: Task[];
 }

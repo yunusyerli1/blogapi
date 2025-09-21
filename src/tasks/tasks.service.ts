@@ -21,10 +21,11 @@ export class TasksService {
     private readonly labelRepository: Repository<TaskLabel>
   ) {}
 
-  public async findAll(filters: FindTaskParams, pagination: FindTasksQueryDto): Promise<[Task[], number]> {
+  public async findAll(filters: FindTaskParams, pagination: FindTasksQueryDto, userId: string): Promise<[Task[], number]> {
     const query = this.taskRepository
       .createQueryBuilder('task')
-      .leftJoinAndSelect('task.labels', 'labels');
+      .leftJoinAndSelect('task.labels', 'labels')
+      .where('task.userId = :userId', { userId });
   
     if (filters.status) {
       query.andWhere('task.status = :status', { status: filters.status });
